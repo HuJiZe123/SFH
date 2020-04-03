@@ -87,6 +87,40 @@ namespace SFH.Controllers
         /*********************************************************************************************************/
 
         // GET: tbl_Movement
+        public ActionResult IndexYears()
+        {
+            var movements = db.tbl_Movement.ToList();                               // extraer todos los datos 
+            List<tbl_Movement> movementsYears = new List<tbl_Movement>();           // Lista que contendra los valores a mostrar
+            List<int> allYears = new List<int>();                                   // Lista que contendra todos los años
+            foreach(var item in movements)                                          // Filtrado de años, los repetidos se descartan
+            {
+                if (!allYears.Contains(item.ExecutedDate.Year)) allYears.Add(item.ExecutedDate.Year);
+            }
+            foreach(var item in allYears)
+            {
+                tbl_Movement movementYearSingle = new tbl_Movement();               // Objeto que servira para el envio de datos
+                float activeAmount = 0;                                             // variables que contendran los valores a examinar
+                float pasiveAmount = 0;
+                float totalAmount = 0;
+                var movementsPerYear = db.tbl_Movement.Where(mpy => mpy.ExecutedDate.Year == item);     // Lista con los datos del año a evaluar
+                foreach(var amount in movementsPerYear)                             // For que nos permite ir adicionanado los ingresos como egresos
+                {
+                    if (amount.type == 1) activeAmount += amount.Sutotal;           // si es de tpo 1 es ingreso, 0 egreso, asi se asignan a las diferentes variables
+                    else pasiveAmount += amount.Sutotal;
+                }
+                totalAmount = activeAmount - pasiveAmount;                          // Variable que guarda el ingreso o egreso total
+                movementYearSingle.quantity = item;                                 // asignacion del año a la variable quality, de tipo entero
+                if (totalAmount > 0) movementYearSingle.type = 1;                   // filtrado para ver el tipo de monto, si es ingreso o egreso
+                else movementYearSingle.type = 0;   
+                movementYearSingle.Description = Math.Abs(totalAmount).ToString();  // Eliminacion del signo negativo y asignacion al objeto para el envio
+                movementsYears.Add(movementYearSingle);                             /// Adicion del objeto a la lista
+            }
+
+
+            return View(movementsYears.ToList());                                   // Envio de la lista a la vista
+        }
+
+        // GET: tbl_Movement
         public ActionResult IndexMonth()
         {
             return View(db.tbl_Movement.ToList());

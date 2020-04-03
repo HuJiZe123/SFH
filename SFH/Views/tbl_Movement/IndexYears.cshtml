@@ -1,0 +1,32 @@
+﻿@model IEnumerable<SFH.Models.tbl_Movement>
+
+@{
+    ViewBag.Title = "IndexYears";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>IndexYears</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<div class="card-columns">
+    @foreach (var item in Model)
+    {
+        <div class="card p-5" style="background-color: #061F40; color:white;">
+            <h1 class="card-title display-4 font-weight-bold">
+                @Html.DisplayFor(modelItem => item.quantity)
+            </h1>
+            <hr class="bg-white" />
+            <p class="card-text h2 text-right">
+                @if (item.type == 1)
+                {<span>+$</span>}
+                else
+                {<span>-$</span>}
+                @Html.DisplayFor(modelItem => item.Description)
+            </p>
+            <hr class="bg-white" />
+            <div class="btn btn-primary w-100 mt-3" style="background-color:#1B4C8C; color:white;">Details</div>
+        </div>
+    }
+</div>

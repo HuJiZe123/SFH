@@ -330,6 +330,7 @@
     <Content Include="Views\tbl_ConstantValues\Edit.cshtml" />
     <Content Include="Views\tbl_ConstantValues\Index.cshtml" />
     <Content Include="Views\tbl_Movement\IndexMonth.cshtml" />
+    <Content Include="Views\tbl_Movement\IndexYears.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
