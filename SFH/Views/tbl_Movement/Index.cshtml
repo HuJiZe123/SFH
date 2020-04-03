@@ -1,0 +1,58 @@
+﻿@model IEnumerable<SFH.Models.tbl_Movement>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index Movements</h2>
+
+<p>
+</p>
+
+@foreach (var item in Model)
+{
+    <div class="card p-2 mb-2 bg-info text-white ">
+        <div class="card-body ">
+            <div class="row" style="align-items: center;">
+                <h4 class="card-text col-sm-4 m-0 align-middle">@Html.DisplayFor(modelItem => item.Description)</h4>
+                <div class="card-text col-sm-2 ">
+                    @if (item.type == 1)
+                    {
+                        <span class=" h4">
+                            +$ @Html.DisplayFor(modelItem => item.Cost)
+                        </span>
+                    }
+                    else
+                    {
+                        <span class=" h4">
+                            -$ @Html.DisplayFor(modelItem => item.Cost)
+                        </span>
+                    }
+                </div>
+                <span class="card-text col-sm-2">
+                    @Html.DisplayFor(modelItem => item.ExecutedDate)
+                </span>
+                <div class="card-text col-sm-2 font-weight-bold">
+                    @if (item.State == 0)
+                    {
+                        @Html.Label("En Espera", null, htmlAttributes: new { @class = "m-0" })
+                    }
+                    else
+                    {
+                        @Html.Label("Ejecutado", null, htmlAttributes: new { @class = "m-0" })
+                    }
+                </div>
+                <div class="card-text col-sm-2 btn-group btn-group-toggle " data-toggle="buttons">
+                    @Html.ActionLink("Details", "Details", new { id = item.id }, htmlAttributes: new { @class = "btn", @style = "width: 100px; background-color: #0553EB; color: white;" })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.id }, htmlAttributes: new { @class = "btn", @style = "width: 100px; background-color: #EB2805; color: white;" })
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="card mb-2 bg-info  ">
+    <div class="card-body nav justify-content-center">
+        @Html.ActionLink("Add new +", "Create", null, htmlAttributes: new { @class = "h3 btn text-white font-weight-bold" })
+    </div>
+</div>
