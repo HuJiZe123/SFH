@@ -12,17 +12,19 @@ namespace SFH.Models
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
-
+    
     public partial class tbl_Movement
     {
         public int id { get; set; }
         public string Description { get; set; }
-        public int Cost { get; set; }
+        [DisplayFormat(DataFormatString = "{0:#.####}")]
+        public double Cost { get; set; }
         public int quantity { get; set; }
-        public int Sutotal { get; set; }
-        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        [DisplayFormat(DataFormatString = "{0:#.####}")]
+        public double Sutotal { get; set; }
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd MMM yyyy}")]
         public Nullable<System.DateTime> ExpectedDate { get; set; }
-        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:dd MMM yyyy}")]
         public System.DateTime ExecutedDate { get; set; }
         public byte State { get; set; }
         public byte type { get; set; }

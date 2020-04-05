@@ -11,11 +11,13 @@ namespace SFH.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     
     public partial class tbl_ConstantValues
     {
         public int id { get; set; }
         public string Description { get; set; }
+        [DisplayFormat(DataFormatString = "{0:#.####}")]
         public double Value { get; set; }
         public byte status { get; set; }
     }

@@ -5,11 +5,20 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>IndexYears</h2>
+<div class="display-2">
+    Years
+    <div class="h2 text-muted">
+        [
+        @if (ViewBag.ActualType == 1)
+        {<span>+$</span>}
+        else
+        {<span>-$</span>}
+        @ViewBag.ActualAmount
+        ]
+    </div>
+</div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+
 <div class="card-columns">
     @foreach (var item in Model)
     {
@@ -23,10 +32,16 @@
                 {<span>+$</span>}
                 else
                 {<span>-$</span>}
-                @Html.DisplayFor(modelItem => item.Description)
+                @Html.DisplayFor(modelItem => item.Sutotal)
             </p>
             <hr class="bg-white" />
-            <div class="btn btn-primary w-100 mt-3" style="background-color:#1B4C8C; color:white;">Details</div>
+            @Html.ActionLink("Details", "IndexMonth", new { year = item.quantity }, htmlAttributes: new { @class = "btn btn-primary w-100 mt-3", @style = "background-color:#051933; color:white;" })
         </div>
     }
+</div>
+
+<div class="card" style="background-color: #333E4D;">
+    <div class="card-body  p-1 nav justify-content-center">
+        @Html.ActionLink("Add new +", "Create", null, htmlAttributes: new { @class = " m-0 h3 btn text-white font-weight-bold" })
+    </div>
 </div>

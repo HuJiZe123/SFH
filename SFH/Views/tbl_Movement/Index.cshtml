@@ -5,14 +5,23 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Index Movements</h2>
-
-<p>
-</p>
+<div class="display-2">
+    @ViewBag.ActualMonth
+    <div class="h2 text-muted">
+        [
+        @if (ViewBag.ActualType == 1)
+        {<span>+$</span>}
+        else
+        {<span>-$</span>}
+        @ViewBag.ActualAmount
+        ]
+    </div>
+</div>
+<br />
 
 @foreach (var item in Model)
 {
-    <div class="card p-2 mb-2 bg-info text-white ">
+    <div class="card p-2 mb-2 text-white " style="background-color: #6C9BD9;">
         <div class="card-body ">
             <div class="row" style="align-items: center;">
                 <h4 class="card-text col-sm-4 m-0 align-middle">@Html.DisplayFor(modelItem => item.Description)</h4>
@@ -20,13 +29,13 @@
                     @if (item.type == 1)
                     {
                         <span class=" h4">
-                            +$ @Html.DisplayFor(modelItem => item.Cost)
+                            +$ @Html.DisplayFor(modelItem => item.Sutotal)
                         </span>
                     }
                     else
                     {
                         <span class=" h4">
-                            -$ @Html.DisplayFor(modelItem => item.Cost)
+                            -$ @Html.DisplayFor(modelItem => item.Sutotal)
                         </span>
                     }
                 </div>
@@ -44,15 +53,40 @@
                     }
                 </div>
                 <div class="card-text col-sm-2 btn-group btn-group-toggle " data-toggle="buttons">
-                    @Html.ActionLink("Details", "Details", new { id = item.id }, htmlAttributes: new { @class = "btn", @style = "width: 100px; background-color: #0553EB; color: white;" })
-                    @Html.ActionLink("Delete", "Delete", new { id = item.id }, htmlAttributes: new { @class = "btn", @style = "width: 100px; background-color: #EB2805; color: white;" })
+                    @Html.ActionLink("Details", "Details",
+                   new { id = item.id
+                   },
+                   htmlAttributes: new { @class = "btn", @style = "width: 100px; background-color: #2D4059; color: white;" })
+
+                    @Html.ActionLink("Delete", "Delete",
+                   new { id = item.id
+                   },
+                   htmlAttributes: new { @class = "btn", @style = "width: 100px; background-color: #2D4059; color: white;" })
                 </div>
             </div>
         </div>
     </div>
 }
-<div class="card mb-2 bg-info  ">
-    <div class="card-body nav justify-content-center">
-        @Html.ActionLink("Add new +", "Create", null, htmlAttributes: new { @class = "h3 btn text-white font-weight-bold" })
+<div class="card mb-2" style="background-color: #333E4D;">
+    <div class="card-body  p-1 nav justify-content-center">
+        @Html.ActionLink("Add new +", "Create", new
+        {
+            year = ViewBag.YearInMonth
+        },
+        htmlAttributes: new { @class = " m-0 h3 btn text-white font-weight-bold" })
     </div>
+</div>
+
+<div class="card" style="background-color: #07254D;">
+    <div class="card-body  p-1 nav justify-content-center">
+        @Html.ActionLink("Add a registered value +", "RegisteredValues",
+       new {
+           year = ViewBag.YearInMonth
+       }, 
+       htmlAttributes: new { @class = " m-0 h3 btn text-white font-weight-bold" })
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "IndexMonth", new { year = ViewBag.YearInMonth }, htmlAttributes: new { @class = "btn btn-primary w-100 mt-3", @style = "background-color:#061F40; color:white;" })
 </div>

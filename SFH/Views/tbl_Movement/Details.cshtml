@@ -79,5 +79,12 @@
 </div>
 <p>
     @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Back to Index", "Index",
+               new {
+                   year = ViewBag.YearInMonth,
+                   month = ViewBag.ActualMonth,
+                   type = ViewBag.ActualType,
+                   amount = ViewBag.ActualAmount
+               },
+               htmlAttributes: new { @class = "btn btn-primary w-100 mt-3", @style = "background-color:#061F40; color:white;" })
 </p>

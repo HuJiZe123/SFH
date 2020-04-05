@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="7fda3e062a534bc0903f65a14a07456f" Name="Diagram1">
+      <Diagram DiagramId="3b9e416635b24466ad03977d53cf609d" Name="Diagram1">
         <EntityTypeShape EntityType="DB_FinancialHelperModel.tbl_ConstantValues" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_FinancialHelperModel.tbl_Movement" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
       </Diagram>

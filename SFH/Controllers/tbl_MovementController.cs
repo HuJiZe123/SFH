@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using SFH.Models;
 using RestSharp;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace SFH.Controllers
 {
@@ -63,6 +64,18 @@ namespace SFH.Controllers
             return Json(totalValue, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public JsonResult CalculateTotal2(string quantity, string amount)
+        {
+            var totalValue = "";
+            try
+            {
+                totalValue = (Convert.ToDouble(amount) * Convert.ToDouble(quantity)).ToString();
+            }
+            catch (Exception ex) { }
+            return Json(totalValue, JsonRequestBehavior.AllowGet);
+        }
+
         public List<string> GetAllCurrenciesNames()
         {
             var response = GetResponse();
@@ -83,58 +96,120 @@ namespace SFH.Controllers
             return currenciesList;
         }
 
+        public float GetTotalInAList(List<tbl_Movement> movements)
+        {
+            float activeAmount = 0;                                             // variables que contendran los valores a examinar
+            float pasiveAmount = 0;
+            float totalAmount = 0;
+            foreach (var amount in movements)                             // For que nos permite ir adicionanado los ingresos como egresos
+            {
+                if (amount.type == 1) activeAmount += Convert.ToSingle(amount.Sutotal);           // si es de tpo 1 es ingreso, 0 egreso, asi se asignan a las diferentes variables
+                else pasiveAmount += Convert.ToSingle(amount.Sutotal);
+            }
+            totalAmount = activeAmount - pasiveAmount;                          // Variable que guarda el ingreso o egreso total
+            return totalAmount;
+        }
+
 
         /*********************************************************************************************************/
 
         // GET: tbl_Movement
         public ActionResult IndexYears()
         {
-            var movements = db.tbl_Movement.ToList();                               // extraer todos los datos 
+            var movements = db.tbl_Movement.OrderByDescending(mv => mv.ExecutedDate).ToList();                               // extraer todos los datos 
             List<tbl_Movement> movementsYears = new List<tbl_Movement>();           // Lista que contendra los valores a mostrar
             List<int> allYears = new List<int>();                                   // Lista que contendra todos los años
-            foreach(var item in movements)                                          // Filtrado de años, los repetidos se descartan
+            float totalAmount = 0;
+            foreach (var item in movements)                                          // Filtrado de años, los repetidos se descartan
             {
                 if (!allYears.Contains(item.ExecutedDate.Year)) allYears.Add(item.ExecutedDate.Year);
             }
             foreach(var item in allYears)
             {
                 tbl_Movement movementYearSingle = new tbl_Movement();               // Objeto que servira para el envio de datos
-                float activeAmount = 0;                                             // variables que contendran los valores a examinar
-                float pasiveAmount = 0;
-                float totalAmount = 0;
-                var movementsPerYear = db.tbl_Movement.Where(mpy => mpy.ExecutedDate.Year == item);     // Lista con los datos del año a evaluar
-                foreach(var amount in movementsPerYear)                             // For que nos permite ir adicionanado los ingresos como egresos
-                {
-                    if (amount.type == 1) activeAmount += amount.Sutotal;           // si es de tpo 1 es ingreso, 0 egreso, asi se asignan a las diferentes variables
-                    else pasiveAmount += amount.Sutotal;
-                }
-                totalAmount = activeAmount - pasiveAmount;                          // Variable que guarda el ingreso o egreso total
+                totalAmount = 0;
+                var movementsPerYear = movements.Where(mpy => mpy.ExecutedDate.Year == item).ToList();     // Lista con los datos del año a evaluar
+                totalAmount = GetTotalInAList(movementsPerYear);                          // Variable que guarda el ingreso o egreso total
                 movementYearSingle.quantity = item;                                 // asignacion del año a la variable quality, de tipo entero
                 if (totalAmount > 0) movementYearSingle.type = 1;                   // filtrado para ver el tipo de monto, si es ingreso o egreso
                 else movementYearSingle.type = 0;   
-                movementYearSingle.Description = Math.Abs(totalAmount).ToString();  // Eliminacion del signo negativo y asignacion al objeto para el envio
+                movementYearSingle.Sutotal = Math.Abs(totalAmount);  // Eliminacion del signo negativo y asignacion al objeto para el envio
                 movementsYears.Add(movementYearSingle);                             /// Adicion del objeto a la lista
             }
-
-
+            totalAmount = GetTotalInAList(movements);                          // Variable que guarda el ingreso o egreso total
+            if (totalAmount > 0) ViewBag.ActualType = 1;
+            else ViewBag.ActualType = 0;
+            ViewBag.ActualAmount = Math.Abs(totalAmount);
             return View(movementsYears.ToList());                                   // Envio de la lista a la vista
         }
 
         // GET: tbl_Movement
-        public ActionResult IndexMonth()
+        public ActionResult IndexMonth(int year)
         {
-            return View(db.tbl_Movement.ToList());
+            var movements = db.tbl_Movement.Where(mv => mv.ExecutedDate.Year == year).OrderByDescending(mv => mv.ExecutedDate).ToList();                               // extraer todos los datos 
+            List<tbl_Movement> movementsMonth = new List<tbl_Movement>();           // Lista que contendra los valores a mostrar
+            List<int> allMonth = new List<int>();                                   // Lista que contendra todos los años
+            float totalAmount = 0;
+            foreach (var item in movements)                                          // Filtrado de años, los repetidos se descartan
+            {
+                if (!allMonth.Contains(item.ExecutedDate.Month)) allMonth.Add(item.ExecutedDate.Month);
+            }
+            foreach (var item in allMonth)
+            {
+                tbl_Movement movementMonthSingle = new tbl_Movement();               // Objeto que servira para el envio de datos
+                var movementsPerMonth = movements.Where(mpy => mpy.ExecutedDate.Month == item).ToList();     // Lista con los datos del año a evaluar
+                totalAmount = GetTotalInAList(movementsPerMonth);                          // Variable que guarda el ingreso o egreso total
+                movementMonthSingle.Description = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(item);                                 // asignacion del año a la variable quality, de tipo entero
+                if (totalAmount > 0) movementMonthSingle.type = 1;                   // filtrado para ver el tipo de monto, si es ingreso o egreso
+                else movementMonthSingle.type = 0;
+                movementMonthSingle.Sutotal = Math.Abs(totalAmount);  // Eliminacion del signo negativo y asignacion al objeto para el envio
+                movementMonthSingle.quantity = year;  // Eliminacion del signo negativo y asignacion al objeto para el envio
+                movementsMonth.Add(movementMonthSingle);                             /// Adicion del objeto a la lista
+            }
+            totalAmount = GetTotalInAList(movements);                          // Variable que guarda el ingreso o egreso total
+            if (totalAmount > 0) ViewBag.ActualType = 1;
+            else ViewBag.ActualType = 0;
+            ViewBag.ActualAmount = Math.Abs(totalAmount);
+            ViewBag.ActualYear = year;
+            return View(movementsMonth.ToList());                                   // Envio de la lista a la vista
         }
 
         // GET: tbl_Movement
-        public ActionResult Index()
+        public ActionResult Index(int year, string month, int type, float amount)
         {
-            return View(db.tbl_Movement.ToList());
+            AssignValues(year, month, type, amount);
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
+            int monthNumber = DateTime.ParseExact(month, "MMMM", CultureInfo.CurrentCulture).Month;
+            var movements = db.tbl_Movement.Where(mv => mv.ExecutedDate.Year == year && mv.ExecutedDate.Month == monthNumber).OrderByDescending(mv => mv.ExecutedDate).ToList();                               // extraer todos los datos 
+            return View(movements.ToList());                                   // Envio de la lista a la vista
+        }
+
+        public ActionResult RegisteredValues()
+        {
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
+            var registeredValue = db.tbl_ConstantValues.Where(cv => cv.status == 1).ToList();
+            return View(registeredValue);
         }
 
         // GET: tbl_Movement/Details/5
         public ActionResult Details(int? id)
         {
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -150,7 +225,86 @@ namespace SFH.Controllers
         // GET: tbl_Movement/Create
         public ActionResult Create()
         {
+            ViewData["Currency"] = GetAllCurrenciesNames().Select(r =>
+              new SelectListItem()
+              {
+                  Text = r.ToString()
+              });
+            ViewBag.txtBoxValueCurrency = "1";
+            ViewBag.txtBoxAmount = "0";
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
             return View();
+        }
+
+        public void AssignValues(int year, string month, int type, float amount)
+        {
+            /**********************************************/
+            YearInMonth = year;
+            ActualMonth = month;
+            ActualAmount = amount;
+            ActualType = type;
+            /**********************************************/
+        }
+
+        // GET: tbl_Movement/Details/5
+        public ActionResult AddInformationFlow(int? identificador)
+        {
+            if (identificador == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            int monthNumber = DateTime.ParseExact(ActualMonth, "MMMM", CultureInfo.CurrentCulture).Month; 
+            string dateS = YearInMonth + "-" + monthNumber + "-" + "1";
+            DateTime date = DateTime.Parse(dateS);
+            tbl_ConstantValues cv = db.tbl_ConstantValues.Find(identificador);
+            tbl_Movement tbl_Movement = new tbl_Movement();
+            tbl_Movement.Description = cv.Description;
+            tbl_Movement.Cost = cv.Value;
+            tbl_Movement.quantity = 1;
+            tbl_Movement.Sutotal = cv.Value * tbl_Movement.quantity;
+            tbl_Movement.ExecutedDate = date;
+            tbl_Movement.ExpectedDate = date;
+            tbl_Movement.State = 0;
+            tbl_Movement.type = 1;
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
+            if (tbl_Movement == null)
+            {
+                return HttpNotFound();
+            }
+            return View(tbl_Movement);
+        }
+
+        /*-------------------------------------------------*/
+
+        public static int YearInMonth { get; set; }
+        public static string ActualMonth { get; set; }
+        public static float ActualAmount { get; set; }
+        public static int ActualType { get; set; }
+
+        /*-------------------------------------------------*/
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddInformationFlow([Bind(Include = "id,Description,Cost,quantity,Sutotal,ExpectedDate,ExecutedDate,State,type")] tbl_Movement tbl_Movement)
+        {
+            if (ModelState.IsValid)
+            {
+                db.tbl_Movement.Add(tbl_Movement);
+                db.SaveChanges();
+                return RedirectToAction("RegisteredValues", new { year = YearInMonth, month = ActualMonth, type = ActualType, amount = ActualAmount });
+            }
+
+            return View(tbl_Movement);
         }
 
         // POST: tbl_Movement/Create
@@ -164,7 +318,7 @@ namespace SFH.Controllers
             {
                 db.tbl_Movement.Add(tbl_Movement);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { year = YearInMonth, month = ActualMonth, type = ActualType, amount = ActualAmount });
             }
 
             return View(tbl_Movement);
@@ -173,6 +327,12 @@ namespace SFH.Controllers
         // GET: tbl_Movement/Edit/5
         public ActionResult Edit(int? id)
         {
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -196,7 +356,7 @@ namespace SFH.Controllers
             {
                 db.Entry(tbl_Movement).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { year = YearInMonth, month = ActualMonth, type = ActualType, amount = ActualAmount });
             }
             return View(tbl_Movement);
         }
@@ -204,6 +364,12 @@ namespace SFH.Controllers
         // GET: tbl_Movement/Delete/5
         public ActionResult Delete(int? id)
         {
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -221,10 +387,16 @@ namespace SFH.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
+            /*****************************************************************/
+            ViewBag.ActualType = ActualType;
+            ViewBag.ActualAmount = ActualAmount;
+            ViewBag.ActualMonth = ActualMonth;
+            ViewBag.YearInMonth = YearInMonth;
+            /*****************************************************************/
             tbl_Movement tbl_Movement = db.tbl_Movement.Find(id);
             db.tbl_Movement.Remove(tbl_Movement);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", new { year = YearInMonth, month = ActualMonth, type = ActualType, amount = ActualAmount });
         }
 
         protected override void Dispose(bool disposing)

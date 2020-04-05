@@ -1,0 +1,52 @@
+﻿@model IEnumerable<SFH.Models.tbl_ConstantValues>
+
+@{
+    ViewBag.Title = "RegisteredValues";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Index Registered Values</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", null, htmlAttributes: new { @class = "btn btn-primary" })
+</p>
+<table class="table">
+    <tr style="background-color:#061F40; color:white;">
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Value)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value)
+            </td>
+            <td>
+                <div class="card-text col-sm-4 btn-group btn-group-toggle  mw-100" data-toggle="buttons">
+                    @Html.ActionLink("Edit", "Edit", new { id = item.id }, htmlAttributes: new { @class = "btn", @style = "width: 100px; background-color:#061F40; color:white;" })
+                    @Html.ActionLink("Details", "Details", new { id = item.id }, htmlAttributes: new { @class = "btn", @style = "background-color:#061F40; color:white; width: 100px" })
+                    @Html.ActionLink("Add as a inflow", "AddInformationFlow", new { identificador = item.id}, htmlAttributes: new { @class = "btn h6", @style = "background-color:#061F40; color:white; width: 100px" })
+                </div>
+            </td>
+        </tr>
+    }
+
+</table>
+
+@Html.ActionLink("Back to Index", "Index",
+           new {
+               year = ViewBag.YearInMonth,
+               month = ViewBag.ActualMonth,
+               type = ViewBag.ActualType,
+               amount = ViewBag.ActualAmount
+           }, 
+           htmlAttributes: new { @class = "btn btn-primary w-100 mt-3", @style = "background-color:#061F40; color:white;" })

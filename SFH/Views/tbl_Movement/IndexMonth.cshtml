@@ -5,20 +5,56 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>IndexMonth</h2>
+<div class="display-2">
+    @ViewBag.ActualYear
+    <div class="h2 text-muted">
+        [
+        @if (ViewBag.ActualType == 1)
+        {<span>+$</span>}
+        else
+        {<span>-$</span>}
+        @ViewBag.ActualAmount
+        ]
+    </div>
+</div>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
 
 <div class="card-columns">
     @foreach (var item in Model)
     {
-        <div class="card p-5" style="background-color: #F2EEB3;">
-            <h1 class="card-title">Card title</h1>
-            <h4 class="card-title text-muted">Card title</h4>
-            <p class="card-text h2 text-right">+$ 5000</p>
-            <div class="btn btn-primary w-100 mt-3" style="background-color:#095F73; color:white;">Details</div>
+        <div class="card p-5" style="background-color: #1C58A6; color:white;">
+            <h1 class="card-title font-weight-bold">
+                @Html.DisplayFor(modelItem => item.Description)
+            </h1>
+            <h4 class="card-title h3">
+                @Html.DisplayFor(modelItem => item.quantity)
+            </h4>
+            <hr class="bg-light" />
+            <p class="card-text h2 text-right">
+                @if (item.type == 1)
+                {<span>+$</span>}
+                else
+                {<span>-$</span>}
+                @Html.DisplayFor(modelItem => item.Sutotal)
+            </p>
+            <hr class="bg-light" />
+            @Html.ActionLink("Details", "Index",
+           new { year = item.quantity,
+               month = item.Description,
+               type = item.type,
+               amount = item.Sutotal
+           }, 
+           htmlAttributes: new { @class = "btn btn-primary w-100 mt-3", @style = "background-color:#061F40; color:white;" })
         </div>
     }
+</div>
+
+<div class="card" style="background-color: #333E4D;">
+    <div class="card-body  p-1 nav justify-content-center">
+        @Html.ActionLink("Add new +", "Create", null, htmlAttributes: new { @class = " m-0 h3 btn text-white font-weight-bold" })
+    </div>
+</div>
+
+<div>
+    @Html.ActionLink("Back to List", "IndexYears", null, htmlAttributes: new { @class = "btn btn-primary w-100 mt-3", @style = "background-color:#061F40; color:white;" })
 </div>

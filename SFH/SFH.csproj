@@ -331,6 +331,8 @@
     <Content Include="Views\tbl_ConstantValues\Index.cshtml" />
     <Content Include="Views\tbl_Movement\IndexMonth.cshtml" />
     <Content Include="Views\tbl_Movement\IndexYears.cshtml" />
+    <Content Include="Views\tbl_Movement\RegisteredValues.cshtml" />
+    <Content Include="Views\tbl_Movement\AddInformationFlow.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

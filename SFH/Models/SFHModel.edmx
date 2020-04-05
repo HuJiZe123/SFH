@@ -20,9 +20,9 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Description" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="Cost" Type="int" Nullable="false" />
+          <Property Name="Cost" Type="float" Nullable="false" />
           <Property Name="quantity" Type="int" Nullable="false" />
-          <Property Name="Sutotal" Type="int" Nullable="false" />
+          <Property Name="Sutotal" Type="float" Nullable="false" />
           <Property Name="ExpectedDate" Type="date" />
           <Property Name="ExecutedDate" Type="date" Nullable="false" />
           <Property Name="State" Type="tinyint" Nullable="false" />
@@ -52,9 +52,9 @@
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Cost" Type="Int32" Nullable="false" />
+          <Property Name="Cost" Type="Double" Nullable="false" />
           <Property Name="quantity" Type="Int32" Nullable="false" />
-          <Property Name="Sutotal" Type="Int32" Nullable="false" />
+          <Property Name="Sutotal" Type="Double" Nullable="false" />
           <Property Name="ExpectedDate" Type="DateTime" Precision="0" />
           <Property Name="ExecutedDate" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="State" Type="Byte" Nullable="false" />

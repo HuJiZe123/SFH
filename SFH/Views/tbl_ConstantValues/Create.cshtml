@@ -64,11 +64,7 @@
                             $("#txtBoxAmount").on('input propertychange paste', CalculateTotal);
                             $("#Currency").focusout(CalculateTotal);
                         });
-
-
                     </script>
-
-
                     @Html.TextBox("txtBoxAmount", null, htmlAttributes: new { @class = "form-control mx-sm-3 mb-2" })
                     @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @class = "form-control mx-sm-3 mb-2" } })
                 </div>
